@@ -1,15 +1,39 @@
 <?php
 
-echo '123';
+$arr = array(
+	array(
+		  "type"=>"click",
+          "name"=>"今日歌曲",
+          "key"=>"V1001_TODAY_MUSIC"
+		),
+	array(
+		'name'=>'下拉菜单',
+		'sub_button'=>array(
+				array(
+				  "type"=>"click",
+		          "name"=>"今日歌曲",
+		          "key"=>"V1001_TODAY_MUSIC"
+				),
+				array(
+				  "type"=>"click",
+		          "name"=>"今日歌曲",
+		          "key"=>"V1001_TODAY_MUSIC"
+				),
+				array(
+				  "type"=>"click",
+		          "name"=>"今日歌曲",
+		          "key"=>"V1001_TODAY_MUSIC"
+				),
+		),
+	),	
 
-		include('./demo/db_example.php');
+	array(
+	  	 "type"=>"click",
+         "name"=>"今日歌曲",
+         "key"=>"V1001_TODAY_MUSIC"
+	),
 
-		$arr = array(
-			'id' => null,
-			'uname'=>'cheng',
-			'meg' => '接收到数据'
-			);
+);
 
-		$database->insert('umeg', $arr);
-      	
-      	
+
+var_dump( json_encode( $arr ) );
