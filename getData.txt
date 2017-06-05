@@ -1,7 +1,7 @@
 <xml><ToUserName><![CDATA[gh_8975a14402a2]]></ToUserName>
 <FromUserName><![CDATA[oI9N8w2l4oG1P6RogEAF1afxZ7lc]]></FromUserName>
-<CreateTime>1496595808</CreateTime>
+<CreateTime>1496642058</CreateTime>
 <MsgType><![CDATA[event]]></MsgType>
 <Event><![CDATA[CLICK]]></Event>
-<EventKey><![CDATA[V1001_TODAY_MUSIC]]></EventKey>
+<EventKey><![CDATA[get-cuisine]]></EventKey>
 </xml>

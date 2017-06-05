@@ -1,39 +1,18 @@
 <?php
 
-$arr = array(
-	array(
-		  "type"=>"click",
-          "name"=>"今日歌曲",
-          "key"=>"V1001_TODAY_MUSIC"
-		),
-	array(
-		'name'=>'下拉菜单',
-		'sub_button'=>array(
-				array(
-				  "type"=>"click",
-		          "name"=>"今日歌曲",
-		          "key"=>"V1001_TODAY_MUSIC"
-				),
-				array(
-				  "type"=>"click",
-		          "name"=>"今日歌曲",
-		          "key"=>"V1001_TODAY_MUSIC"
-				),
-				array(
-				  "type"=>"click",
-		          "name"=>"今日歌曲",
-		          "key"=>"V1001_TODAY_MUSIC"
-				),
-		),
-	),	
 
-	array(
-	  	 "type"=>"click",
-         "name"=>"今日歌曲",
-         "key"=>"V1001_TODAY_MUSIC"
-	),
-
-);
+		echo "<pre>";
 
 
-var_dump( json_encode( $arr ) );
+		include('./demo/db_example.php');	
+		$dataNum =  $database->count('menu');
+
+		$list = array();
+  		do{
+  		
+	  		$num  = rand(1, $dataNum);
+	  		$list =  $database->select('menu',"cname", array("id[=]" => $num ));
+
+  		}while( empty($list[0]) );
+
+  		var_dump( $list[0] );

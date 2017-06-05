@@ -45,6 +45,19 @@ class wxModel
         //php > 7.0 使用 $postStr = file_get_contents('php://input');
         $postStr = file_get_contents('php://input');
 
+        //使用mode类中的
+        include('./demo/db_example.php');
+        $arr = array(
+            'id' => null,
+            'uname'=>'cheng',
+            'meg' => time()
+            );
+
+        $database->insert('umeg', $arr);
+
+
+        
+
         //extract post data
         if (!empty($postStr)){
 
@@ -62,89 +75,35 @@ class wxModel
                 $MsgType      =  $postObj->MsgType;         //消息类型
     
         
-                //返回普通文本消息
-                // if($MsgType == 'text')
-                // {
-
-                //     $Content = $postObj->Content;
-                //     $resStr = $this->sendText($FromUserName, $ToUserName, '找我干嘛,滚,不想见你');
-                    
-                //     //返回图文消息
-                //     if( $Content == '图文' )
-                //     {
-                //          $arr =  array(
-                //                 array(
-                //                     'title' => 'AA奇幻日记',
-                //                     'data' => '2017-7-2',
-                //                     'description' => '123',
-                //                     'url' => 'http://slide.news.sina.com.cn/w/slide_1_2841_153039.html#p=1',
-                //                     'picUrl' => 'http://n.sinaimg.cn/news/1_img/upload/8de453bf/20170603/Pvok-fyfvnky4286753.jpg',
-                //                 ),
-                //                 array(
-                //                     'title' => 'BB奇幻日记',
-                //                     'data' => '2017-7-2',
-                //                     'description' => '123',
-                //                     'url' => 'http://slide.sports.sina.com.cn/k/slide_2_786_131756.html#p=1',
-                //                     'picUrl' => 'http://n.sinaimg.cn/sports/2_img/sipaphoto/cf0d0fdd/20170604/jQ8w-fyfvnky4418688.jpg',
-                //                 ),
-                //                 array(
-                //                     'title' => 'BB奇幻日记',
-                //                     'data' => '2017-7-2',
-                //                     'description' => '123',
-                //                     'url' => 'http://slide.sports.sina.com.cn/k/slide_2_786_131756.html#p=1',
-                //                     'picUrl' => 'http://n.sinaimg.cn/sports/2_img/sipaphoto/cf0d0fdd/20170604/jQ8w-fyfvnky4418688.jpg',
-                //                 ),
-
-                //          );
-                //          $resStr =  $this->sendImgText($FromUserName, $ToUserName, $arr);
-                //     }
-                   
-                //     //返回图片消息
-                //     if( $Content == '1')
-                //     {               
-                //         $MediaId = "UGV7igNGt9Cgyz6pDTTZ0onSPvCZb5PoZAAm942UEbA8QK2XD-eUB_L_a0Zyc7cI";
-                //         $resStr =  $this->sendImg($FromUserName, $ToUserName,  $MediaId);
-                //     }
-                // }
-
-
+        
 
                  //事件
                 if($MsgType == 'event')
                 {
                     $event = $postObj->Event;
-                    $eventKey = $postObj->EventKey;
-
-                    //关注事件
+                    
                     if( $event == "subscribe" )
-                    {
-                        $resStr = $this->sendText($FromUserName, $ToUserName, '居然敢关注我,那就给你见识下我的厉害吧,点击下面获取按钮,你就知道你今天要吃什么了'); 
+                     {
+                         $resStr = $this->sendText($FromUserName, $ToUserName, '居然敢关注我,那我就给你见识下我的厉害,点击下面获取按钮,你就知道你今天要吃什么了'); 
                     }
 
-                    //店家点击事件
+
                     if( $event == "CLICK" )
                     {
-
-
-                        //点击获取按钮
-                        if( $eventKey == "get-cuisine" ){
-
-                            $list = $this->getMenuData();//获取随机菜单
-                  
-                            $resStr = $this->sendText($FromUserName, $ToUserName, $list[0]);
-                          
-                        }
-
-
-
-
-
-
+                        $num  = rand(1,200)
+                        $resStr = $this->sendText($FromUserName, $ToUserName, '居然敢关注我,那我就给你见识下我的厉害,点击下面获取按钮,你就知道你今天要吃什么了'); 
                     }
 
 
 
                 } 
+
+
+
+
+
+
+
 
                 file_put_contents('data.txt', $resStr);
                 echo $resStr;
@@ -190,24 +149,6 @@ class wxModel
         }else{
             return false;
         }
-    }
-
-
-
-    /*
-        随机返回数据库中的一条数据
-    */
-    public function getMenuData() {
-
-        include('./demo/db_example.php');       //导入对象
-        $dataNum =  $database->count('menu');   //查询数据条数
-        $list = array();
-        do{
-            $num  = rand(1, $dataNum);
-            $list =  $database->select('menu',"cname", array("id[=]" => $num ));
-
-        }while( empty($list[0]) );
-        return  $list;                       
     }
 
 
