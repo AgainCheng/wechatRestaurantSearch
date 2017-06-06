@@ -22,8 +22,7 @@ $wechatObj->valid();
 class wxModel
 {
 
-	public $appid = "wxa678c4e0756b1969";
-    /*
+
         接口信息
     */
     public function valid()
@@ -296,8 +295,8 @@ class wxModel
             return $_SESSION['access_token'];
         }else{
 
-            $appid = "wxa678c4e0756b1969";
-            $secret = "cd204ae4316019628ce439001280e579";
+            $appid = $this->appid;
+            $secret = $this->secret;
 
             $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$appid}&secret={$secret}";
             

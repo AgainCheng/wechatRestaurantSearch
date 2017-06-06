@@ -12,7 +12,7 @@
 
 
 	$area = '广州';
-	$key = '3b6382cf12c747c7dbc1520867b743c7';
+	$key = '';
 	$dtype = '2';
 
 	$url = "http://v.juhe.cn/weather/index";
