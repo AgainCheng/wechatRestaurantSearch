@@ -21,6 +21,8 @@ $wechatObj->valid();
 
 class wxModel
 {
+
+	public $appid = "wxa678c4e0756b1969";
     /*
         接口信息
     */
@@ -60,55 +62,11 @@ class wxModel
                 $ToUserName   =  $postObj->ToUserName;      //发送者ID,用户
                 $FromUserName =  $postObj->FromUserName;    //接受者ID,开发者
                 $MsgType      =  $postObj->MsgType;         //消息类型
-    
-        
-                //返回普通文本消息
-                // if($MsgType == 'text')
-                // {
+    				
 
-                //     $Content = $postObj->Content;
-                //     $resStr = $this->sendText($FromUserName, $ToUserName, '找我干嘛,滚,不想见你');
-                    
-                //     //返回图文消息
-                //     if( $Content == '图文' )
-                //     {
-                //          $arr =  array(
-                //                 array(
-                //                     'title' => 'AA奇幻日记',
-                //                     'data' => '2017-7-2',
-                //                     'description' => '123',
-                //                     'url' => 'http://slide.news.sina.com.cn/w/slide_1_2841_153039.html#p=1',
-                //                     'picUrl' => 'http://n.sinaimg.cn/news/1_img/upload/8de453bf/20170603/Pvok-fyfvnky4286753.jpg',
-                //                 ),
-                //                 array(
-                //                     'title' => 'BB奇幻日记',
-                //                     'data' => '2017-7-2',
-                //                     'description' => '123',
-                //                     'url' => 'http://slide.sports.sina.com.cn/k/slide_2_786_131756.html#p=1',
-                //                     'picUrl' => 'http://n.sinaimg.cn/sports/2_img/sipaphoto/cf0d0fdd/20170604/jQ8w-fyfvnky4418688.jpg',
-                //                 ),
-                //                 array(
-                //                     'title' => 'BB奇幻日记',
-                //                     'data' => '2017-7-2',
-                //                     'description' => '123',
-                //                     'url' => 'http://slide.sports.sina.com.cn/k/slide_2_786_131756.html#p=1',
-                //                     'picUrl' => 'http://n.sinaimg.cn/sports/2_img/sipaphoto/cf0d0fdd/20170604/jQ8w-fyfvnky4418688.jpg',
-                //                 ),
+    			$linka = '<a href="'.$this->getUserInfo().'">点我吧,你会感到意外</a>';
 
-                //          );
-                //          $resStr =  $this->sendImgText($FromUserName, $ToUserName, $arr);
-                //     }
-                   
-                //     //返回图片消息
-                //     if( $Content == '1')
-                //     {               
-                //         $MediaId = "UGV7igNGt9Cgyz6pDTTZ0onSPvCZb5PoZAAm942UEbA8QK2XD-eUB_L_a0Zyc7cI";
-                //         $resStr =  $this->sendImg($FromUserName, $ToUserName,  $MediaId);
-                //     }
-                // }
-
-
-
+        		$resStr = $this->sendText($FromUserName, $ToUserName, $linka);  
                  //事件
                 if($MsgType == 'event')
                 {
@@ -125,20 +83,29 @@ class wxModel
                     if( $event == "CLICK" )
                     {
 
+                         include('./demo/getMenuData.php');
+                         $menu  = new getMenuData(); 
 
                         //点击获取按钮
                         if( $eventKey == "get-cuisine" ){
+                                            
+                            $text = $menu->getMenu();
 
-                            $list = $this->getMenuData();//获取随机菜单
-                  
-                            $resStr = $this->sendText($FromUserName, $ToUserName, $list[0]);
-                          
+                            //返回信息
+                            $resStr = $this->sendText($FromUserName, $ToUserName,  $text);
+
                         }
 
-
-
-
-
+                        //设置菜式等级
+                        if( $eventKey == '4' || $eventKey == '3' ||$eventKey == '2' || $eventKey == '1'){
+                            //准备值
+                            $arr =  array( 'userid' => (string)$ToUserName, 'nd' => '1');
+                            //设置函数
+                            $menu->addUserInfo($ToUserName, $arr);
+                            //返回信息
+                            $resStr = $this->sendText($FromUserName, $ToUserName, '当前菜式等级为:'.$eventKey );
+                        
+                        }
 
                     }
 
@@ -146,7 +113,8 @@ class wxModel
 
                 } 
 
-                file_put_contents('data.txt', $resStr);
+
+                // file_put_contents('data.txt', $resStr);
                 echo $resStr;
 
 
@@ -192,24 +160,22 @@ class wxModel
         }
     }
 
-
-
     /*
         随机返回数据库中的一条数据
     */
-    public function getMenuData() {
+    public function getMenuData() 
+    {
 
         include('./demo/db_example.php');       //导入对象
         $dataNum =  $database->count('menu');   //查询数据条数
         $list = array();
         do{
             $num  = rand(1, $dataNum);
-            $list =  $database->select('menu',"cname", array("id[=]" => $num ));
+            $list =  $database->select('menu', "cname", array("id[=]" => $num ));
 
         }while( empty($list[0]) );
-        return  $list;                       
+        return  $list[0].$dataNum;                       
     }
-
 
     /*
         返回图片信息
@@ -235,7 +201,7 @@ class wxModel
 
     /*
         返回文本信息
-        Parameter:(发送者ID, 接受者ID, 内容)
+        Parameter:(发送者ID, 接受者ID, 内容)	
         Return: 填充好的微信服务器接收数据
     */
     public function  sendText ($ToUserName, $FromUserName, $Content) 
@@ -259,7 +225,7 @@ class wxModel
         Parameter:(发送者ID, 接受者ID, 数据内容)
         $arr =  array(
                  array(
-                    'title' => 'AA奇幻日记',
+                    'title' => 'AA奇幻日记',  
                      'data' => '2017-7-2',
                     'description' => '123',
                     'url' => 'http://slide.news.sina.com.cn/w/slide_1_2841_153039.html#p=1',
@@ -303,18 +269,14 @@ class wxModel
     /*
         curl获取数据方法
     */
-    public function  getData ( $url ) 
+    public function  curlSendDateGet ( $url ) 
     {
-
         $ch = curl_init();
-
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-
         // 3. 执行cURL请求
         $ret = curl_exec($ch);
-
         // 4. 关闭资源
         curl_close($ch);
 
@@ -339,7 +301,7 @@ class wxModel
 
             $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$appid}&secret={$secret}";
             
-            $token =  json_decode($this->getData($url) );
+            $token =  json_decode($this->curlSendDateGet($url) );
 
             $token = $token->access_token;
 
@@ -348,6 +310,91 @@ class wxModel
             return $token;
         }
     }
+
+    /*
+		获取授权用户信息
+    */
+    public function getUserInfo () 
+    {
+
+    	$appid = $this->appid;
+    	$redirect_uri = 'http://119.23.204.96/weixin/loginTest.php';
+    	$scope = 'snsapi_userinfo';
+
+    	$url = "https://open.weixin.qq.com/connect/oauth2/authorize";
+    	$url .= "?appid={$appid}";
+    	$url .= "&redirect_uri={$redirect_uri}";
+    	$url .= "&response_type=code";
+    	$url .= "&scope={$scope}";
+    	$url .= "&state=STATE#wechat_redirect ";
+    	
+    	return $url;
+    }
+    /*
+		curlpost发送方式
+    */
+    public function curlSendDatePost ($url, $data) 
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        $tmpInfo = curl_exec($ch);
+        curl_close($ch);
+        return $tmpInfo;
+    }
+    /*
+		获取关注用户ID
+    */
+    public function getUserOpenId () 
+    {
+        $tokenId = $this->getAccessToken();
+
+        $url =  "https://api.weixin.qq.com/cgi-bin/user/get?access_token={$tokenId}";
+
+        $arr = json_decode($this->getData($url), true);
+  
+        return $arr['data']['openid'] ;
+
+    }
+
+
+    /*
+		群发消息--文本模式(发送内容)
+    */
+    public function sendCrowdData ($content) 
+    {
+        //数据模板
+        $textTpl  ='{
+           "touser":[
+                %s
+           ],
+            "msgtype": "text",
+            "text": { "content": "%s"}
+        }';
+
+        $str = '"'.implode($this->getUserOpenId(), '","').'"';//获取合并用户列表字符串
+        $data = sprintf($textTpl, $str, $content);//填充模板
+        $token = $this->getAccessToken();       //获取token值
+        $url = "https://api.weixin.qq.com/cgi-bin/message/mass/sendall?access_token={$token}";
+        return $this->curlSendDatePost($url, $data);//发送数据
+
+    }
+
+    public function getWeather ($area) 
+    {
+
+		$key = '3b6382cf12c747c7dbc1520867b743c7';
+		$dtype = '2';
+
+		$url = "http://v.juhe.cn/weather/index";
+		$url .="?cityname={$area}";
+		$url .="&dtype={$dtype}";
+		$url .="&format=";
+		$url .="&key={$key}";
+    }
+
 
 
 }

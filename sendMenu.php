@@ -1,54 +1,12 @@
 <?php
 	
-   echo"123";
-	 session_start();
-
-
+    echo"123";
+	   session_start();
     include("./demo/token.php");
   	$aa = new token();
   	$token  = $aa->getAccessToken();
 
  	  $url  =  "https://api.weixin.qq.com/cgi-bin/menu/create?access_token={$token}";
-
-$data = '
-  {
-     "button":[
-     {  
-          "type":"click",
-          "name":"获取",
-          "key":"get-cuisine"
-      },
-
-      {
-           "name":"难度",
-           "sub_button":[
-           {  
-               "type":"view",
-               "name":"搜索",
-               "url":"http://www.soso.com/"
-            },
-            {
-                 "type":"view",
-                 "name":"wxa",
-                 "url":"http://mp.weixin.qq.com",
-             },
-            {
-               "type":"click",
-               "name":"点我",
-               "key":"V1001_GOOD"
-            }]
-       },
-
-       { 
-          "type":"click",
-          "name":"制作方法",
-          "key":"get-makeFunc"
-      }
-
-      ]
- },
-
-';
 
 $data = '
   {
@@ -64,22 +22,22 @@ $data = '
            {  
                "type":"click",
                "name":"4",
-                "key":"getde4"
+                "key":"4"
             },
             {
                "type":"click",
                "name":"3",
-                "key":"getde3"
+                "key":"3"
              },
               {
                "type":"click",
                "name":"2",
-                "key":"getde2"
+                "key":"2"
              },
             {
                "type":"click",
                "name":"1",
-                "key":"getde1"
+                "key":"1"
             }]
        },
        { 
@@ -87,13 +45,6 @@ $data = '
           "name":"制作方法",
           "key":"get-makeFunc"
         },
-
-      
-
-
-
-
-
       ]
  },
 

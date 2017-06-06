@@ -1,8 +1,2 @@
-<xml>
-                        <ToUserName><![CDATA[oI9N8w2l4oG1P6RogEAF1afxZ7lc]]></ToUserName>
-                        <FromUserName><![CDATA[gh_8975a14402a2]]></FromUserName>
-                        <CreateTime>1496642058</CreateTime>
-                        <MsgType><![CDATA[text]]></MsgType>
-                        <Content><![CDATA[清蒸牛肉]]></Content>
-                         <FuncFlag>0</FuncFlag>
-                     </xml>
+object
+INSERT INTO "userStatus" ("userid", "nd") VALUES ('gh_8975a14402a2', '1')

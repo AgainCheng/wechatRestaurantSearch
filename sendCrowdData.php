@@ -5,7 +5,7 @@ class wxModel
  
 
     /*
-        curlè·å–æ•°æ®æ–¹æ³•
+        curl»ñÈ¡Êı¾İ·½·¨
     */
     public function  getData ( $url ) 
     {
@@ -15,9 +15,9 @@ class wxModel
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 
 
-        // 3. æ‰§è¡ŒcURLè¯·æ±‚
+        // 3. Ö´ĞĞcURLÇëÇó
         $ret = curl_exec($ch);
-        // 4. å…³é—­èµ„æº
+        // 4. ¹Ø±Õ×ÊÔ´
         curl_close($ch);
 
         return $ret;
@@ -25,7 +25,7 @@ class wxModel
 
     
     /*
-        axxess_tokenç¼“å­˜æ–¹æ³•
+        axxess_token»º´æ·½·¨
     */
     public function  getAccessToken ()
     {
@@ -52,58 +52,55 @@ class wxModel
     }
 
     /*
-		è·å–æ‰€æœ‰å…³æ³¨ç”¨æˆ·çš„ID,è¿”å›æ•°ç»„
+        »ñÈ¡ËùÓĞ¹Ø×¢ÓÃ»§µÄID,·µ»ØÊı×é
     */
     public function getUserOpenId () 
     {
-     	$tokenId = $this->getAccessToken();
+        $tokenId = $this->getAccessToken();
 
-    	$url =  "https://api.weixin.qq.com/cgi-bin/user/get?access_token={$tokenId}";
+        $url =  "https://api.weixin.qq.com/cgi-bin/user/get?access_token={$tokenId}";
 
-    	$arr = json_decode($this->getData($url), true);
+        $arr = json_decode($this->getData($url), true);
   
-    	return $arr['data']['openid'] ;
+        return $arr['data']['openid'] ;
 
     }
     /*
-		curlPostå‘é€æ–¹å¼
+        curlPost·¢ËÍ·½Ê½
     */
     public function curlSendDatePost ($url, $data) 
     {
-    	$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-		$tmpInfo = curl_exec($ch);
-		curl_close($ch);
-		return $tmpInfo;
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        $tmpInfo = curl_exec($ch);
+        curl_close($ch);
+        return $tmpInfo;
     }
 
-
-    //ç¾¤å‘æ¶ˆæ¯
+    
+    //Èº·¢ÏûÏ¢
     public function sendCrowdData () 
     {
+        //Êı¾İÄ£°å
+        $textTpl  ='{
+           "touser":[
+                %s
+           ],
+            "msgtype": "text",
+            "text": { "content": "%s"}
+        }';
 
-    	//æ•°æ®æ¨¡æ¿
-    	$textTpl  ='{
-		   "touser":[
-		   		%s
-		   ],
-		    "msgtype":"text",
-		    "text": { "content": "%s"}
-		}';
+        $str = '"'.implode($this->getUserOpenId(), '","').'"';//»ñÈ¡ºÏ²¢ÓÃ»§ÁĞ±í×Ö·û´®
+        $content = "²ËëÈ¸üĞÂÀ²,²»Ïë³Ô·¹µÄ¸Ï¿ì¹ıÀ´À².";
+        $data = sprintf($textTpl, $str, $content);//Ìî³äÄ£°å
+        echo $data;
+        $token = $this->getAccessToken();       //»ñÈ¡tokenÖµ
+        $url = "https://api.weixin.qq.com/cgi-bin/message/mass/sendall?access_token={$token}";
 
-    	$str = '"'.implode($this->getUserOpenId(), '","').'"';//è·å–åˆå¹¶ç”¨æˆ·åˆ—è¡¨å­—ç¬¦ä¸²
-		$content = "èœè‚´æ›´æ–°å•¦,ä¸æƒ³åƒé¥­çš„èµ¶å¿«è¿‡æ¥å•¦.";
-
-
-    	$data = sprintf($textTpl, $str, $content);//å¡«å……æ¨¡æ¿
-    	echo $data;
-		$token = $this->getAccessToken();//è·å–tokenå€¼
-    	$url = "https://api.weixin.qq.com/cgi-bin/message/mass/send?access_token={$token}";
-
-    	return $this->curlSendDatePost($url, $data);//å‘é€æ•°æ®
+        return $this->curlSendDatePost($url, $data);//·¢ËÍÊı¾İ
 
     }
 
@@ -119,12 +116,12 @@ echo $arr ;
 
 
 // { "touser":[ 
-// 		"oI9N8w31__SXd4VzbXmVgcFRkmoI",
-// 		"oI9N8w58sN-8DKyWVpXUAPL2wjSo",
-// 		"oI9N8w2l4oG1P6RogEAF1afxZ7lc" 
-// 	],
-// 	 "msgtype": "text",
-// 	  "text": { "content": "èœè‚´æ›´æ–°å•¦,ä¸æƒ³åƒé¥­çš„èµ¶å¿«è¿‡æ¥å•¦."} 
+//      "oI9N8w31__SXd4VzbXmVgcFRkmoI",
+//      "oI9N8w58sN-8DKyWVpXUAPL2wjSo",
+//      "oI9N8w2l4oG1P6RogEAF1afxZ7lc" 
+//  ],
+//   "msgtype": "text",
+//    "text": { "content": "²ËëÈ¸üĞÂÀ²,²»Ïë³Ô·¹µÄ¸Ï¿ì¹ıÀ´À²."} 
 // }
 
 
