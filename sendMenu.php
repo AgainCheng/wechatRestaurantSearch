@@ -24,7 +24,7 @@ $data = '
 
        { 
           "type":"click",
-          "name":"制作方法",
+          "name":"定位",
           "key":"get-makeFunc"
         },
       ]

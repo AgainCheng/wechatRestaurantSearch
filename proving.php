@@ -4,20 +4,20 @@
   */
 
 //define your token
-define("TOKEN", "againliang");
+	define("TOKEN", "againliang");
 
-$wechatObj = new wxModel();
+	$wechatObj = new wxModel();
 
-if ($_GET['echostr'])
-{
-    $wechatObj->valid();
-}
-else
-{
-    $wechatObj->responseMsg();
-}
+	if ($_GET['echostr'])
+	{
+	    $wechatObj->valid();
+	}
+	else
+	{
+	    $wechatObj->responseMsg();
+	}
 
-$wechatObj->valid();
+	$wechatObj->valid();
 
 class wxModel
 {
@@ -64,15 +64,50 @@ class wxModel
                 $FromUserName =  $postObj->FromUserName;    //接受者ID,开发者
                 $MsgType      =  $postObj->MsgType;         //消息类型
     				
+
+    			include('./demo/getMenuData.php');
+                $menuObj  =  new cuisineApp($ToUserName); 
+
+
                 //文本数据
                 if( $MsgType == "text"){
 
                 	//获取文本内容
                 	$Content = $postObj->Content;
 
-                	file_put_contents("./userTextMsg/".$ToUserName.'.txt', $Content."/r/n", FILE_APPEND);
-                	
-                
+                	$Content2 = 'a11'.(string)$Content;
+                	file_put_contents('text.txt', strpos($Content, '我要吃'));
+
+                	//判断是否有关键值,设置查询条件
+                	if( strpos($Content2, '我要吃'))
+                	{
+
+	                	$text = $menuObj->setUserSel($Content);//设置用户喜好
+	                	$num = $menuObj->getMenuData();//根据喜好查询数据库,如果没有则返回提示消息
+	                	//判断是否找到数据
+	                	if( !empty($text ) ){
+	                		if(empty($num)){
+	                			$text = '抱歉,客官库中没有找到您要的  '.$text."  奥!!!";
+	                		}else{
+	                			$text = '已设置条件:'.$text;
+	                		}
+	                	}else{
+	                		$text = '抱歉客官,没有找到你要的类型,满足不了你的特殊爱好奥!!!';
+	                	}
+	                	$resStr = $this->sendText($FromUserName, $ToUserName,  $text);
+                	 }else{
+	                	$text = "客官,想吃什么,请输入: 我要吃 跟上类名, 即可帮你寻找弹药奥!!(例如,我要吃粤菜,辣,广东)";
+	 					$resStr = $this->sendText($FromUserName, $ToUserName,  $text);
+                	}
+ 				
+
+
+ 					if($Content == '我要吃')
+ 					{	
+ 						$text = '客官想吃什么呢,奴家可不给吃奥!!!!';
+ 						$resStr = $this->sendText($FromUserName, $ToUserName,  $text);
+ 					}
+       
                 }
 
 
@@ -86,23 +121,19 @@ class wxModel
                     //关注事件
                     if( $event == "subscribe" )
                     {
-                        $resStr = $this->sendText($FromUserName, $ToUserName, '居然敢关注我,那就给你见识下我的厉害吧,点击下面获取按钮,你就知道你今天要吃什么了'); 
+                        $resStr = $this->sendText($FromUserName, $ToUserName, '客官你来啦,点击下面抽取按钮按钮,你就知道你今天要吃什么了'); 
                     }
 
                     //菜单点击事件
                     if( $event == "CLICK" )
                     {
 
-                         include('./demo/getMenuData.php');
-
-                         $menuObj  =  new cuisineApp($ToUserName); 
-
                         //获取按钮点击事件
                         if( $eventKey == "get-cuisine" )
                         {
                                 
                             if( empty($menuObj->getNum() ) ){
-                            	$text = '客官你的弹药已经用完了奥,请点击下面填装按钮,补充弹药!!!';
+                            	$text = '客官,你的弹药已经用完了奥,请点击下面填装按钮,补充弹药!!!';
                             }else{
                             	$text = $menuObj->getMenu() ."-----剩下".$menuObj->getNum();
                             }
@@ -111,11 +142,12 @@ class wxModel
                             $resStr = $this->sendText($FromUserName, $ToUserName,  $text);       
                           
                         }
+
                         //填充按钮事件
                         if( $eventKey == "padding" )
                         {
                         	$menuObj->writeDataRedis();
-                        	$text = "客官你的弹药已经用完毕,请尽情玩耍吧".$menuObj->getNum();
+                        	$text = "客官你的弹药已经用完毕,请尽情玩耍吧,弹药填充:".$menuObj->getNum();
                         	$resStr = $this->sendText($FromUserName, $ToUserName, $text);
                         }
 

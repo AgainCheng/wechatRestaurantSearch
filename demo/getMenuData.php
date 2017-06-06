@@ -30,7 +30,7 @@ class cuisineApp
                 ]
             ]);
 
-            $this->userID = $userID;
+            $this->userID = (string)$userID;
 
             $this->redis =  new  Redis;
             $this->redis->connect('localhost',6379);
@@ -38,58 +38,57 @@ class cuisineApp
 
 
     //设置用户喜好(用户id,字串)
-    public function setUserSel ($uid,$comtent) 
+    public function setUserSel ($comtent) 
     {
-    
-        echo '<pre>';
+        $comtent = "-".$comtent;
         //获取父ID数组
         $fid =  $this->link->select('typec', 'id', array('fid[=]' => 0));   //查询数据条数
 
         $selArr = [];
+        $nameSel = []; 
         //循环父id
         foreach($fid as $id)
         {
             //获取子ID数组
-            $idArr =  $database->select('typec', '*', array('fid[=]' => $id));  
+            $idArr =  $this->link->select('typec', '*', array('fid[=]' => $id));  
             //循环子ID
             foreach($idArr as $v)
             {   
                 //判断字符串是否包含
                 if( strpos($comtent, $v['namec']) ){
                     $selArr[] = $v['fid'] . ':' . $v['id'] ;
+                    $nameSel[] = $v['namec'];
                 }
             }       
         }
 
-        if( empty($selArr) ){
-            return '客官抱歉,本店没有你要吃的类型,满足不了你的特殊爱好奥!!!';
-        }
-
-        // var_dump($selArr);
+        $nameStr = implode($nameSel, ',');     //拼接条件用于返回
 
         //拼接用户查询条件
         $str = implode($selArr, ',');
 
         $data = array(
             'id' => null,
-            'userid' => $uid,
+            'userid' => $this->userID,
             'unsel' => $str
         );
 
 
 
         //写入数据数据库
-        $userid = $database->select('userSel', 'id', array('userid[=]' => $uid ));
+        $userid = $this->link->select('userSel', 'id', array('userid[=]' => $this->userID ));
 
         if( empty($userid) ){
 
-            $database->insert('userSel', $data);
+            $this->link->insert('userSel', $data);
 
         }else{
 
-            $database->update('userSel', $data, array('userid[=]' => $uid ));
+            $this->link->update('userSel', $data, array('userid[=]' => $this->userID ));
 
         }
+
+        return $nameStr ;
     }
 
 
