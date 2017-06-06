@@ -1,2 +1,0 @@
-object
-INSERT INTO "userStatus" ("userid", "nd") VALUES ('gh_8975a14402a2', '1')

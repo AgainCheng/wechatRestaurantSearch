@@ -1,20 +1,16 @@
 <?php
 
-    
-	include('./vardor/carfan/Medoo/medoo.php');
+    include('./vardor/carfan/Medoo/medoo.php');
 
-
-
-class getMenuData 
+class cuisineApp
 {
-    private  $link;
+    public $link ; 
+    public $userID;
+    public $redis;
 
 
-
-    /*
-        连接数据库
-    */
-    public function __construct () 
+    //构造连接数据库
+    public function __construct ($userID) 
     {
             $this->link = new medoo([
                 // 必须配置项
@@ -33,53 +29,137 @@ class getMenuData
                     PDO::ATTR_CASE => PDO::CASE_NATURAL
                 ]
             ]);
+
+            $this->userID = $userID;
+
+            $this->redis =  new  Redis;
+            $this->redis->connect('localhost',6379);
     }
 
 
-	 /*
-     	随机返回数据库中的一条数据,菜名
-    */
-    public function getMenu() 
+    //设置用户喜好(用户id,字串)
+    public function setUserSel ($uid,$comtent) 
     {
-        $dataNum =  $this->link->count('menu');   //查询数据条数
-        $list = array();
-        do{
-            $num  = rand(1, $dataNum);
-            $list =  $this->link->select('menu', "cname", array("id[=]" => $num ));
+    
+        echo '<pre>';
+        //获取父ID数组
+        $fid =  $this->link->select('typec', 'id', array('fid[=]' => 0));   //查询数据条数
 
-        }while( empty($list[0]) );
-        return  $list[0];                       
+        $selArr = [];
+        //循环父id
+        foreach($fid as $id)
+        {
+            //获取子ID数组
+            $idArr =  $database->select('typec', '*', array('fid[=]' => $id));  
+            //循环子ID
+            foreach($idArr as $v)
+            {   
+                //判断字符串是否包含
+                if( strpos($comtent, $v['namec']) ){
+                    $selArr[] = $v['fid'] . ':' . $v['id'] ;
+                }
+            }       
+        }
+
+        if( empty($selArr) ){
+            return '客官抱歉,本店没有你要吃的类型,满足不了你的特殊爱好奥!!!';
+        }
+
+        // var_dump($selArr);
+
+        //拼接用户查询条件
+        $str = implode($selArr, ',');
+
+        $data = array(
+            'id' => null,
+            'userid' => $uid,
+            'unsel' => $str
+        );
+
+
+
+        //写入数据数据库
+        $userid = $database->select('userSel', 'id', array('userid[=]' => $uid ));
+
+        if( empty($userid) ){
+
+            $database->insert('userSel', $data);
+
+        }else{
+
+            $database->update('userSel', $data, array('userid[=]' => $uid ));
+
+        }
     }
 
-    /*
-        根据用户id存储用户选项
-        如果存在则更新
-        如果不存在则添加
 
-    */
-    public function  addUserInfo ($uid, $arr) 
+
+    //获取根据用户喜好获取菜单
+    public function getMenuData () 
+    {
+        //查询用户喜好
+        $data = $this->link->select('userSel', 'unsel', array('userid[=]' => $this->userID ));
+
+        //拼接
+        $fidArr  = explode(',', $data[0]);
+        $selArr = [];
+        foreach( $fidArr as $v ){
+            $arr = explode(':', $v);
+            $selArr[$arr[0]] = $arr[1];
+        }
+
+
+        //数据库字段定位,写死了,有待优化
+        $arr = [] ;
+        foreach($selArr as $k => $v){
+            switch($k){
+                case 1 : $arr['cid[=]'] = $v ;break;
+                case 2 : $arr['kid[=]'] = $v ;break;
+                case 3 : $arr['sid[=]'] = $v ;break;
+                case 4 : $arr['did[=]'] = $v ;break;
+            }   
+        }
+     
+        //拼接查询条件
+        $whereArr = [ 'OR' => $arr ];
+
+        //查询数据库
+        $MenuNameData =  $this->link->select('menuc', 'NAME', $whereArr);   //查询数据条数    
+        
+        //返回查询数据
+        return $MenuNameData ; 
+    }
+
+
+    //写入redis
+    public function writeDataRedis () 
     {
 
+        //获取根据用户喜好获取菜单
+        $NameData = $this->getMenuData();
+        //写入redis
+        foreach( $NameData as $v ){
 
-        $this->link->insert('userStatus', $arr);
+            $this->redis->sadd($this->userID,$v);
 
-
-
+        }   
     }
 
-
-    /*
-        根据难度赛选赛选出数据
-    */
-    public function getMenuSle ($uid) 
+    //随机返回redis中的菜名
+    public function getMenu () 
     {
+        if( empty($this->redis->scard($this->userID)) ){
 
-        $list = $this->link->select('menu', 'nd', array('userid' => $uid ));
-
-
-        return $list[0];
+            return false;
+        }
+        return $this->redis->spop($this->userID);
     }
 
-
+    //获取用户在redis中剩余的条数
+    public function getNum () 
+    {   
+        return $this->redis->scard($this->userID);
+    }
 
 }
+

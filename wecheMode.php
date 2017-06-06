@@ -22,8 +22,8 @@ $wechatObj->valid();
 class wxModel
 {
 
-	public $appid = "wxa678c4e0756b1969";
-	public $secret  = "cd204ae4316019628ce439001280e579";
+    public $appid = "wxa678c4e0756b1969";
+    public $secret  = "cd204ae4316019628ce439001280e579";
     /*
         接口信息
     */
@@ -63,17 +63,11 @@ class wxModel
                 $ToUserName   =  $postObj->ToUserName;      //发送者ID,用户
                 $FromUserName =  $postObj->FromUserName;    //接受者ID,开发者
                 $MsgType      =  $postObj->MsgType;         //消息类型
-    				
-                //文本数据
-                if( $MsgType == "text"){
+                    
 
-                	//获取文本内容
-                	$Content = $postObj->Content;
 
-                	file_put_contents("./userTextMsg/".$ToUserName.'.txt', $Content."/r/n", FILE_APPEND);
-                	
-                
-                }
+                $linka = '<a href="'.$this->getUserInfo().'">点我吧,你会感到意外</a>';
+                $resStr = $this->sendText($FromUserName, $ToUserName, $linka);  
 
 
 
@@ -94,33 +88,33 @@ class wxModel
                     {
 
                          include('./demo/getMenuData.php');
-
-                         $menuObj  =  new cuisineApp($ToUserName); 
+                         $menu  = new getMenuData(); 
 
                         //获取按钮点击事件
-                        if( $eventKey == "get-cuisine" )
-                        {
-                                
-                            if( empty($menuObj->getNum() ) ){
-                            	$text = '客官你的弹药已经用完了奥,请点击下面填装按钮,补充弹药!!!';
-                            }else{
-                            	$text = $menuObj->getMenu() ."-----剩下".$menuObj->getNum();
-                            }
+                        if( $eventKey == "get-cuisine" ){
+                                            
+                            $text = $menu->getMenu();
 
-                            //返回信息  
-                            $resStr = $this->sendText($FromUserName, $ToUserName,  $text);       
-                          
-                        }
-                        //填充按钮事件
-                        if( $eventKey == "padding" )
-                        {
-                        	$menuObj->writeDataRedis();
-                        	$text = "客官你的弹药已经用完毕,请尽情玩耍吧".$menuObj->getNum();
-                        	$resStr = $this->sendText($FromUserName, $ToUserName, $text);
+                            //返回信息
+                            $resStr = $this->sendText($FromUserName, $ToUserName,  $text);
+
                         }
 
+                        //难度按钮点击事件
+                        if( $eventKey == '4' || $eventKey == '3' ||$eventKey == '2' || $eventKey == '1'){
+                            //准备值
+                            $arr =  array( 'userid' => (string)$ToUserName, 'nd' => '1');
+                            //设置函数
+                            $menu->addUserInfo($ToUserName, $arr);
+                            //返回信息
+                            $resStr = $this->sendText($FromUserName, $ToUserName, '当前菜式等级为:'.$eventKey );
+                        
+                        }
 
                     }
+
+
+
                 } 
 
 
@@ -211,7 +205,7 @@ class wxModel
 
     /*
         返回文本信息
-        Parameter:(发送者ID, 接受者ID, 内容)	
+        Parameter:(发送者ID, 接受者ID, 内容)    
         Return: 填充好的微信服务器接收数据
     */
     public function  sendText ($ToUserName, $FromUserName, $Content) 
@@ -233,16 +227,15 @@ class wxModel
     /*
         发送图文消息
         Parameter:(发送者ID, 接受者ID, 数据内容)
-        数据内容格式:
-		        $arr =  array(
-		                 array(
-		                    'title' => 'AA奇幻日记',  
-		                     'data' => '2017-7-2',
-		                    'description' => '123',
-		                    'url' => 'http://slide.news.sina.com.cn/w/slide_1_2841_153039.html#p=1',
-		                    'picUrl' => 'http://n.sinaimg.cn/news/1_img/upload/8de453bf/20170603/Pvok-fyfvnky4286753.jpg',
-		                )
-		          );
+        $arr =  array(
+                 array(
+                    'title' => 'AA奇幻日记',  
+                     'data' => '2017-7-2',
+                    'description' => '123',
+                    'url' => 'http://slide.news.sina.com.cn/w/slide_1_2841_153039.html#p=1',
+                    'picUrl' => 'http://n.sinaimg.cn/news/1_img/upload/8de453bf/20170603/Pvok-fyfvnky4286753.jpg',
+                )
+          );
         Return: 填充好的微信服务器接收数据
     */
     public function sendImgText ($ToUserName, $FromUserName, $arr) 
@@ -296,7 +289,7 @@ class wxModel
 
 
     /*
-		curlpost发送方式(访问地址)
+        curlpost发送方式(访问地址)
     */
     public function curlSendDatePost ($url, $data) 
     {
@@ -310,7 +303,7 @@ class wxModel
         return $tmpInfo;
     }
     
-
+    
     /*
         axxess_token缓存方法
     */
@@ -340,7 +333,28 @@ class wxModel
 
 
     /*
-		获取关注用户ID
+        返回授权连接
+    */
+    public function getUserInfo () 
+    {
+
+        $appid = $this->appid;
+        $redirect_uri = 'http://119.23.204.96/weixin/loginTest.php';
+        $scope = 'snsapi_userinfo';
+
+        $url = "https://open.weixin.qq.com/connect/oauth2/authorize";
+        $url .= "?appid={$appid}";
+        $url .= "&redirect_uri={$redirect_uri}";
+        $url .= "&response_type=code";
+        $url .= "&scope={$scope}";
+        $url .= "&state=STATE#wechat_redirect ";
+        
+        return $url;
+    }
+
+
+    /*
+        获取关注用户ID
     */
     public function getUserOpenId () 
     {
@@ -355,40 +369,7 @@ class wxModel
 
 
     /*
-		返回授权连接
-    */
-    public function empowerLink () 
-    {
-
-    	$appid = $this->appid;
-    	$redirect_uri = 'http://119.23.204.96/weixin/loginTest.php';
-    	$scope = 'snsapi_userinfo';
-
-    	$url = "https://open.weixin.qq.com/connect/oauth2/authorize";
-    	$url .= "?appid={$appid}";
-    	$url .= "&redirect_uri={$redirect_uri}";
-    	$url .= "&response_type=code";
-    	$url .= "&scope={$scope}";
-    	$url .= "&state=STATE#wechat_redirect ";
-    	
-    	return $url;
-    }
-
-    public function getUserInfo () 
-    {
-    	// $code = $_GET['code'];
-    	// $appid = $this->appid;
-    	// $secret = $this->
-
-
-
-
-    }
-
-
-
-    /*
-		群发消息--文本模式(发送内容)
+        群发消息--文本模式(发送内容)
     */
     public function sendCrowdData ($content) 
     {
@@ -415,14 +396,14 @@ class wxModel
     public function getWeather ($area) 
     {
 
-		$key = '3b6382cf12c747c7dbc1520867b743c7';
-		$dtype = '2';
+        $key = '3b6382cf12c747c7dbc1520867b743c7';
+        $dtype = '2';
 
-		$url = "http://v.juhe.cn/weather/index";
-		$url .="?cityname={$area}";
-		$url .="&dtype={$dtype}";
-		$url .="&format=";
-		$url .="&key={$key}";
+        $url = "http://v.juhe.cn/weather/index";
+        $url .="?cityname={$area}";
+        $url .="&dtype={$dtype}";
+        $url .="&format=";
+        $url .="&key={$key}";
     }
 
 

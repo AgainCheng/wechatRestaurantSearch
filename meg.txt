@@ -1,9 +1,0 @@
-123123123123123123000000<xml>
-    <ToUserName><![CDATA[gh_4febd2a1d67f]]></ToUserName>
-    <FromUserName><![CDATA[o0pV21qySUyAPVAp7sRkBG6hSk1M]]></FromUserName>
-    <CreateTime>1496420781</CreateTime>
-    <MsgType><![CDATA[text]]></MsgType>
-    <Content><![CDATA[123]]></Content>
-    <MsgId>6427078315877533062</MsgId>
-    <Encrypt><![CDATA[dLrF8DCzWGYubmlVQFtaQOeNEAcZd7osSyV0RE5AwuDADzBI7DBmP9EAg3kfTjGObdyzd4zfRbpCfjjuGoI4kecnfNIoPGE2Fwue2KLlvd3L+jhqOy81m2h+q7pnHJT233yVKe1CgZH0bdSV3GoASVUeCZ6euOl7xT6+qrIzdgvnWDwrI1aI7vhsxqBt740bNWrpjWxpVyjYn02vO5XqsGQmWTlXTFdsNReIRX5/wHXm1IEG4gEErHOBILJFxaPkb/OrVYhhNc7a/htQ9p5eGjmhxUbYsYjdj5oo3hV3VCGWJpsPzx9m5L87tJ2E/Au355BZhQEXr0HydTmNMS1IIxEYJnDz37xmlAKySdsuB6ydxm/vJdICy4z8TsvuJZVSo7r/pPMh0WLqi/gyuQMcu1HyvJ9EQnLhXIWUQmPDtus=]]></Encrypt>
-</xml>

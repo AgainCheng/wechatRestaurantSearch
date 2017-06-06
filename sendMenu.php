@@ -13,33 +13,15 @@ $data = '
      "button":[
      {  
           "type":"click",
-          "name":"获取",
+          "name":"抽取",
           "key":"get-cuisine"
       },
-      {
-           "name":"难度",
-           "sub_button":[
-           {  
-               "type":"click",
-               "name":"4",
-                "key":"4"
-            },
-            {
-               "type":"click",
-               "name":"3",
-                "key":"3"
-             },
-              {
-               "type":"click",
-               "name":"2",
-                "key":"2"
-             },
-            {
-               "type":"click",
-               "name":"1",
-                "key":"1"
-            }]
-       },
+      {  
+          "type":"click",
+          "name":"填充",
+          "key":"padding"
+      },
+
        { 
           "type":"click",
           "name":"制作方法",
