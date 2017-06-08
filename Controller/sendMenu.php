@@ -1,10 +1,12 @@
 <?php
 	
-    echo"123";
-	   session_start();
-    include("./demo/token.php");
-  	$aa = new token();
-  	$token  = $aa->getAccessToken();
+    echo "修改菜单";
+
+    include('wecheController.php');
+    $weche = new wecheController();
+    $token =  $weche->getAccessToken();
+
+
 
  	  $url  =  "https://api.weixin.qq.com/cgi-bin/menu/create?access_token={$token}";
 
@@ -24,13 +26,15 @@ $data = '
 
        { 
           "type":"click",
-          "name":"定位",
-          "key":"get-makeFunc"
+          "name":"搜索",
+          "key":"pin"
         },
       ]
  },
 
 ';
+
+
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
