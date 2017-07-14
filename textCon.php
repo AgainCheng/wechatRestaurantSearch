@@ -1,20 +1,20 @@
 <?php
 
-include ('./Controller/dataController.php');
+include('./Model/Medoo/medoo.php');
+include ('./Controller/restDataController.php');
 include ('./View/wecheView.php');
 
 //文本信息处理类
 class textCon
 {
 
-
-	public $dataObj;
+	public $resData;
 	public $viewObj;
 
 	public function __construct ()
 	{	
-		$this->dataObj  =  	new dataController($GLOBALS['userID']);   
-        $this->viewObj  =  new wecheView();
+        $this->viewObj  =  	new wecheView();
+        $this->resData  =   new restDataController();
 
 	}
 
@@ -22,59 +22,93 @@ class textCon
 	public function textHandle ($Content) 
 	{	
 		
-		//默认信息处理
-		$resStr = $this->ptText($Content);
-    	
-    	//添加前置符号防止判断为0
-    	$Content2 = 'a'.$Content;
-	 	if ( strpos($Content2, '我要吃') ) { $resStr  =  $this->wycText($Content); }
+		    	
+    	//关键字"我要吃"调用方法
+    	$tem = 'a'.$Content;
+	 	if ( strpos($tem, '我要吃') ) { $this->wycText($Content); }
 
+	 	//数字信息调用方法
+	 	$tem = (int)$Content;
+	 	if ( $tem != 0 ) { $this->numText($tem); }
 
+	 	// 默认信息处理
+	 	$this->ptText();
 
-    	return  $resStr;
+    
 	}
 
 
 	//处理普通信息
-	public function ptText ($Content)
+	public function ptText ()
 	{
 	
-		$resStr = '这条是普通消息';
+		$resStr = '客官点击下面 [抽取] 按钮,随机抽取菜式奥!!';
 
+		$this->viewObj->sendText($resStr);
+	}
+
+
+	// //处理关键字"我要吃"
+	public function wycText ($Content)
+	{
+		
+		$text = $this->resData->setUserSel($Content);
+		var_dump($text);
+		if($text){
+			
+			$resStr = '已设定条件: '.$text;
+
+		} else {
+			
+			$resStr = '抱歉客官,没有您要的选项奥!';
+		
+		}
+		var_dump($resStr);
 		return  $this->viewObj->sendText($resStr);
 	}
 
 
-	//处理关键字"我要吃"
-	public function wycText ($Content)
+	//处理数字消息默认回复餐馆菜单
+	public function numText ($content)
 	{
-		
-		$text = $this->dataObj->setUserSel($Content);
-	    $num = $this->dataObj->getMenuData(); //根据喜好查询数据库,如果没有则返回提示消息
+		echo "123";
 
-	    //判断是否找到数据
-    	if( !empty($text ) ){
-    		if(empty($num)){
-    			$resStr = '抱歉,客官库中没有 '.$text." 数据奥奥!!!";
-    		}else{
-    			$resStr = '已设置条件:'.$text;
-    		}
-    	}else{
-    		$resStr = '抱歉客官,没有找到你要的类型,满足不了你的特殊爱好奥!!!';
-    	}
+		$nameOrPic =  $this->resData->getRestMenu($content);
 
-		return  $this->viewObj->sendText($resStr);
+		var_dump($nameOrPic);
+
+		if (!$nameOrPic) { 
+			$resStr = '抱歉客官,没 有 该 店 铺 的信息奥!!!';
+			$this->viewObj->sendText($resStr);
+			exit; 
+		}
+
+		$name = explode(',', $nameOrPic['menu_name']);
+		$pirce = explode(',', $nameOrPic['menu_price']);
+		var_dump($name);
+		var_dump($pirce);
+
+		$resStr = $nameOrPic['address']."餐馆的菜单为:\n";
+
+		foreach ($name as  $k => $v) {
+			$resStr .= $v.' : '.$pirce[$k]."\n";
+		}
+		$resStr .= '<a href="http://119.23.204.96/cheng/public">到这里去</a>';
+		echo $resStr;
+
+		$this->viewObj->sendText($resStr);
 	}
 
 
 }
 
-$userID =  '123123';
-$deveID =  'cheng'; 
+// $userID =  '123123';
+// $deveID =  'cheng'; 
 
-$obj  = new textCon($deveID, $deveID);
-$aa  =  $obj->textHandle('我要吃');
-echo $aa ; 
-file_put_contents('./userTextMsg/sendMsgUser.txt', $aa);
+// echo "<pre>";
+// $obj  = new textCon();
+// $aa  =  $obj->textHandle('我要吃甜的');
+// echo $aa ; 
+
 
 

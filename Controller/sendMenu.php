@@ -16,18 +16,46 @@ $data = '
      {  
           "type":"click",
           "name":"抽取",
-          "key":"get-cuisine"
+          "key":"get"
       },
       {  
           "type":"click",
-          "name":"填充",
-          "key":"padding"
+          "name":"搜索",
+          "key":"pin"
       },
 
        { 
-          "type":"click",
-          "name":"搜索",
-          "key":"pin"
+          "name": "更多", 
+          "sub_button": [
+              {
+                  "type": "scancode_waitmsg", 
+                  "name": "进入", 
+                  "key": "rselfmenu_0_0", 
+                  "sub_button": [ ]
+              }, 
+              {
+                  "type": "scancode_push", 
+                  "name": "APP下载", 
+                  "key": "rselfmenu_0_1", 
+                  "sub_button": [ ]
+              },
+              {
+                  "type": "scancode_push", 
+                  "name": "添加店铺", 
+                  "key": "rselfmenu_0_1", 
+                  "sub_button": [ ]
+              },
+              {
+                  "type": "scancode_push", 
+                  "name": "往期文章", 
+                  "key": "rselfmenu_0_1", 
+                  "sub_button": [ ]
+              },
+              {
+                  "name": "发送位置", 
+                  "type": "location_select", 
+                  "key": "rselfmenu_2_0"
+              },
         },
       ]
  },

@@ -4,7 +4,7 @@
   */
 
 //define your token
-	define("TOKEN", "againliang");
+	define("", "");
 
 	$wechatObj = new wxModel();
 
@@ -48,6 +48,7 @@ class wxModel
 
         //extract post data
         if (!empty($postStr)) {
+        	
         		file_put_contents('./userTextMsg/getMsgUser.txt', '这是用户发送过来的数据'.$postStr);	//写入接受信息
                 /* libxml_disable_entity_loader is to prevent XML eXternal Entity Injection,
                    the best way is to check the validity of xml by yourself */
@@ -56,6 +57,7 @@ class wxModel
                 // 接收微信服务器发送过来的xml数据
                 $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
                 
+                //解析
                 $ToUserName   =  $postObj->ToUserName;      //发送者ID,用户
                 $FromUserName =  $postObj->FromUserName;    //接受者ID,开发者
                 $MsgType      =  $postObj->MsgType;         //消息类型
@@ -65,19 +67,19 @@ class wxModel
         		$GLOBALS['deveID'] = (string)$FromUserName;
 
 
-    			//文本处理
+    			// 文本处理
                 if ( $MsgType == 'text' ) {
 
                     include ('textCon.php');
                     $text = new textCon();
                     
-                    $Content  = $postObj->Content; 
+                    $Content  = (string)$postObj->Content; 
                     $resStr = $text->textHandle($Content); 
 
                 }
 
 
-                //地址信息处理
+                // 地址信息处理
                 if ($MsgType == 'location') {
 
                 	include ('locationCon.php');
@@ -87,7 +89,7 @@ class wxModel
                 }
 
 
-                 //事件
+                 // 事件
                 if ($MsgType == 'event') {
          
                 	include ('eventCon.php');
@@ -95,10 +97,6 @@ class wxModel
                 	(new eventCon())->eventHaedel(  (string)$postObj->EventKey );
 
                 } 
-
-
-               	file_put_contents('./userTextMsg/sendMsgUser.txt', '这条是输出内容'.$resStr);	  //写入输出信息
-                echo $resStr;
 
 
 

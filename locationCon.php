@@ -2,6 +2,7 @@
  // $GLOBALS['deveID'] 用户id
  // $GLOBALS['deveID'] 开发者id
 include ('./Controller/restDataController.php');
+include('./Model/Medoo/medoo.php');
 include ('./View/wecheView.php');
 
 class locationCon
@@ -22,18 +23,17 @@ class locationCon
 	//写入数据库
 	public function locationHandle ($postObj)
 	{
-		$data['userid']   = 	(string)$postObj->ToUserName;
+		$data['user_id']   = 	(string)$postObj->ToUserName;
 		$data['x'] 		  = 	(string)$postObj->Location_X;
 		$data['y'] 		  =		(string)$postObj->Location_Y;
-		$data['location'] = 	(string)$postObj->Label;
+		$data['address'] = 		(string)$postObj->Label;
 
 		$restObj = new restDataController();
-		$restObj->wirteUInfo($data, 'ulocation', 'userid', $data['userid']);
+		$restObj->wirteUInfo($data, 'user_info', 'user_id', $data['user_id']);
 
-
-		$str = '已设定位置'.$data['location'].'('.$data['x'] .":".$data['y'].')';
-		return $this->viewObj->sendText($str);
-	}
+		$str = "已设定位置:\n".$data['address'];
+		$this->viewObj->sendText($str);
+	 }
 
 }
 
@@ -55,13 +55,11 @@ class locationCon
 // $userID =  '123123';
 // $deveID =  'cheng'; 
 
-// $obj  = new locationCon($deveID, $deveID);
+// $obj  = new locationCon();
 
 // $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
 
 // $aa  =  $obj->locationHandle($postObj);
 
 // var_dump($aa) ;
-// file_put_contents('./userTextMsg/sendMsgUser.txt', $aa);
-
 

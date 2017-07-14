@@ -1,7 +1,6 @@
 <?php
 
-include('./Model/Medoo/medoo.php');
-
+include('restDataController.php');
 /*
     这个类用于操作数据库.
     这是方法简述:
@@ -14,39 +13,10 @@ include('./Model/Medoo/medoo.php');
     wirteUInfoDatabase(数据arr, 表名, 约束字段):    插入用户数据
     error():              返回所有数据库操作语句
 */
-class dataController
+class dataController extends restDataController
 {
-    public $link ; 
-    public $userID;
-    public $redis;
 
 
-    //构造连接数据库
-    public function __construct ($userID) 
-    {
-            $this->link = new medoo([
-                // 必须配置项
-                'database_type' => 'mysql',
-                'database_name' => 'cuisine',
-                'server' => 'localhost',
-                'username' => 'root',
-                'password' => '123456',
-                'charset' => 'utf8',
-                // 可选参数
-                'port' => 3306,
-                // 可选，定义表的前缀
-                'prefix' => '',
-                // 连接参数扩展, 更多参考 http://www.php.net/manual/en/pdo.setattribute.php
-                'option' => [
-                    PDO::ATTR_CASE => PDO::CASE_NATURAL
-                ]
-            ]);
-
-            $this->userID = (string)$userID;
-
-            $this->redis =  new  Redis;
-            $this->redis->connect('localhost',6379);
-    }
 
 
     //抽取用户喜好,拼接数据结构,写入数据库(内容)
@@ -84,8 +54,6 @@ class dataController
             'userid' => $this->userID,
             'unsel' => $str
         );
-
-
 
         //写入数据数据库
         $userid = $this->link->select('userSel', 'id', array('userid[=]' => $this->userID ));
@@ -142,7 +110,7 @@ class dataController
     }
 
 
-    //将用户喜好菜单写入redis
+    //将用户菜单写入redis
     public function writeDataRedis () 
     {
 
@@ -180,7 +148,9 @@ class dataController
     public function wirteUInfoDatabase ($data, $tableName, $openid) 
     {
         $userid = $this->link->select($tableName, 'id', array($openid.'[=]' => $this->userID ));
+
         if (empty($userid)) {
+
             return $this->link->insert($tableName, $data);
         
         } else {
@@ -193,7 +163,9 @@ class dataController
     public function error () 
     {
         $erro = $this->link->log() ;
+
         file_put_contents('writeDataLog.txt', $erro);
+
         return  $this->link->log();
     }
 

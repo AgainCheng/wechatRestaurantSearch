@@ -1,4 +1,26 @@
-注意事项：
-1.WXBizMsgCrypt.php文件提供了WXBizMsgCrypt类的实现，是用户接入企业微信的接口类。Sample.php提供了示例以供开发者参考。errorCode.php, pkcs7Encoder.php, sha1.php, xmlparse.php文件是实现这个类的辅助类，开发者无须关心其具体实现。
-2.WXBizMsgCrypt类封装了 DecryptMsg, EncryptMsg两个接口，分别用于开发者解密以及开发者回复消息的加密。使用方法可以参考Sample.php文件。
-3.加解密协议请参考微信公众平台官方文档。
+
+说明:
+
+	1.这是一个随性而起的项目,没有使用任何框架,只是某天随手就写了起来:
+	2.主要功能是能够搜索附近所有的餐馆,并查看餐馆信息
+
+
+文件/目录介绍:
+
+	Model 		目录 		里面存放了一个控制数据库的model类
+	Controller 	目录 		虽然目录名叫控制器,但里面存的是功能类,供给控制器使用
+	userTextMsg 目录		包含了两个文件,用户发送过来的消息和服务器发送出去的消息
+	View		目录		封装了一个发送信息类,任何发送给微信服务器的信息都需要一定的格式
+
+	proving.php	 	文件  	这个是微信服务器信息过来的入口文件,由里面分支处理,路由给相应的控制器处理
+	locationCon.php 文件	用于处理坐标类型的信息
+	textCon.php		文件	用于处理文本类型的信息
+	eventCon.php	文件	处理按钮事件
+
+
+目前功能:
+
+	发送坐标
+	搜索附近餐馆
+	随机抽取菜名
+

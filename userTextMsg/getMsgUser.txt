@@ -1,7 +1,0 @@
-这是用户发送过来的数据<xml><ToUserName><![CDATA[gh_8975a14402a2]]></ToUserName>
-<FromUserName><![CDATA[oI9N8w2l4oG1P6RogEAF1afxZ7lc]]></FromUserName>
-<CreateTime>1496927381</CreateTime>
-<MsgType><![CDATA[event]]></MsgType>
-<Event><![CDATA[CLICK]]></Event>
-<EventKey><![CDATA[pin]]></EventKey>
-</xml>

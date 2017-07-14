@@ -7,7 +7,7 @@
  * Copyright 2016, Angel Lai
  * Released under the MIT license
  */
-class medoo
+class medoo2
 {
 	// General
 	protected $database_type;
