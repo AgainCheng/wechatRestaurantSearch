@@ -1,0 +1,2 @@
+# wechatRestaurantSearch
+这是一个搜索附近餐馆的微信公众号项目
